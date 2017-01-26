@@ -11,6 +11,7 @@
 
 
 #include <sys/socket.h>       /*  socket definitions        */
+#include <netinet/in.h>
 #include <sys/types.h>        /*  socket types              */
 #include <arpa/inet.h>        /*  inet (3) funtions         */
 #include <unistd.h>           /*  misc. UNIX functions      */
@@ -40,6 +41,7 @@ int main(int argc, char *argv[]) {
     short int port;                  /*  port number               */
     struct    sockaddr_in servaddr;  /*  socket address structure  */
     char      buffer[MAX_LINE];      /*  character buffer          */
+    char      buffer_send[MAX_LINE]  /*  Holds message to be send to server */
     char     *szAddress;             /*  Holds remote IP address   */
     char     *szPort;                /*  Holds remote port         */
     char     *endptr;                /*  for strtol()              */
@@ -91,16 +93,35 @@ int main(int argc, char *argv[]) {
     }
 
 
-    /*  Get string to echo from user  */
+    /*  Get string to follow user commands */
 
-    printf("Enter the string to echo: ");
-    fgets(buffer, MAX_LINE, stdin);
+    do 
+    {
+        printf("Insert your command: ");
+        fgets(buffer, MAX_LINE, stdin);
+
+        if (buffer == "s") {
+            printf("Please Enter a string: ");
+            fget(buffer, MAX_LINE, stdin);
+        }
+
+        if (buffer == "t") 
+        {
+            printf("Please Enter a string: ");
+            fget(buffer, MAX_LINE, stdin);
+        }
+    } while (buffer == "q");
     
 
     /*  Send string to echo server, and retrieve response  */
 
     Writeline(conn_s, buffer, strlen(buffer));
     Readline(conn_s, buffer, MAX_LINE-1);
+
+    if (close(conn_s) < 0 ) {
+        fprintf(stderr, "ECHOSERV: Error calling close()\n");
+        exit(EXIT_FAILURE);
+    }
 
 
     /*  Output echoed string  */
