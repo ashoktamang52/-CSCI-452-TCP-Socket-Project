@@ -37,14 +37,15 @@ int ParseCmdLine(int argc, char *argv[], char **szAddress, char **szPort);
 
 int main(int argc, char *argv[]) {
 
-    int       conn_s;                /*  connection socket         */
-    short int port;                  /*  port number               */
-    struct    sockaddr_in servaddr;  /*  socket address structure  */
-    char      buffer[MAX_LINE];      /*  character buffer          */
-    char      buffer_send[MAX_LINE];  /*  Holds message to be send to server */
-    char     *szAddress;             /*  Holds remote IP address   */
-    char     *szPort;                /*  Holds remote port         */
-    char     *endptr;                /*  for strtol()              */
+    int       conn_s;                     /*  connection socket                  */
+    short int port;                       /*  port number                        */
+    struct    sockaddr_in servaddr;       /*  socket address structure           */
+    char      buffer[MAX_LINE];           /*  character buffer                   */
+    char      buffer_send[MAX_LINE];      /*  Holds message to be send to server */
+    char      buffer_received[MAX_LINE];  /*  Holds message send by server       */
+    char     *szAddress;                  /*  Holds remote IP address            */
+    char     *szPort;                     /*  Holds remote port                  */
+    char     *endptr;                     /*  for strtol()                       */
 
 
     /*  Get command line arguments  */
@@ -102,16 +103,16 @@ int main(int argc, char *argv[]) {
         if (strncmp(buffer, "s", 1) == 0) {
             printf("\nPlease Enter a string: ");
             fgets(buffer_send, MAX_LINE, stdin);
-            break;
+            Writeline(conn_s, buffer_send, strlen(buffer));
         } 
 
         else if (strncmp(buffer, "t", 1) == 0) {
             printf("\nPlease Enter a string: ");
             fgets(buffer_send, MAX_LINE, stdin);
-            break;
+            Writeline(conn_s, buffer_send, strlen(buffer));
         }
         else if (strncmp(buffer, "q", 1) == 0)
-            continue;
+            break;
         else
             printf("\nInvalid Command: Press 's' for echo, 't' for file storage and 'q' for exit.\n");
     } while (strncmp(buffer, "q", 1) != 0);
@@ -119,8 +120,9 @@ int main(int argc, char *argv[]) {
 
     /*  Send string to echo server, and retrieve response  */
 
-    Writeline(conn_s, buffer_send, strlen(buffer));
-    Readline(conn_s, buffer, MAX_LINE-1);
+    
+    Readline(conn_s, buffer_received, MAX_LINE-1);
+    printf("Server responded: %s", buffer_received);
 
     if (close(conn_s) < 0 ) {
         fprintf(stderr, "ECHOSERV: Error calling close()\n");
