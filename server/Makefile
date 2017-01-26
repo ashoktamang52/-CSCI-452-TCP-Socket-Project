@@ -7,6 +7,8 @@ server.o: server.c helper.h
 helper.o: helper.c helper.h
 	gcc -o helper.o helper.c -c -ansi -pedantic -Wall
 
+clean:
+	rm helper.o server.o server
 
 
 

@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     short int port;                  /*  port number               */
     struct    sockaddr_in servaddr;  /*  socket address structure  */
     char      buffer[MAX_LINE];      /*  character buffer          */
-    char      buffer_send[MAX_LINE]  /*  Holds message to be send to server */
+    char      buffer_send[MAX_LINE];  /*  Holds message to be send to server */
     char     *szAddress;             /*  Holds remote IP address   */
     char     *szPort;                /*  Holds remote port         */
     char     *endptr;                /*  for strtol()              */
@@ -94,28 +94,32 @@ int main(int argc, char *argv[]) {
 
 
     /*  Get string to follow user commands */
-
-    do 
-    {
+    do {
         printf("Insert your command: ");
         fgets(buffer, MAX_LINE, stdin);
+        printf("%s", buffer);
 
-        if (buffer == "s") {
-            printf("Please Enter a string: ");
-            fget(buffer, MAX_LINE, stdin);
-        }
+        if (strncmp(buffer, "s", 1) == 0) {
+            printf("\nPlease Enter a string: ");
+            fgets(buffer_send, MAX_LINE, stdin);
+            break;
+        } 
 
-        if (buffer == "t") 
-        {
-            printf("Please Enter a string: ");
-            fget(buffer, MAX_LINE, stdin);
+        else if (strncmp(buffer, "t", 1) == 0) {
+            printf("\nPlease Enter a string: ");
+            fgets(buffer_send, MAX_LINE, stdin);
+            break;
         }
-    } while (buffer == "q");
+        else if (strncmp(buffer, "q", 1) == 0)
+            continue;
+        else
+            printf("\nInvalid Command: Press 's' for echo, 't' for file storage and 'q' for exit.\n");
+    } while (strncmp(buffer, "q", 1) != 0);
     
 
     /*  Send string to echo server, and retrieve response  */
 
-    Writeline(conn_s, buffer, strlen(buffer));
+    Writeline(conn_s, buffer_send, strlen(buffer));
     Readline(conn_s, buffer, MAX_LINE-1);
 
     if (close(conn_s) < 0 ) {
