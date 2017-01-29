@@ -57,16 +57,18 @@ int main(int argc, char *argv[]) {
 
     port = strtol(szPort, &endptr, 0);
     if ( *endptr ) {
-	printf("ECHOCLNT: Invalid port supplied.\n");
-	exit(EXIT_FAILURE);
+    	printf("ECHOCLNT: Invalid port supplied.\n");
+    	exit(EXIT_FAILURE);
     }
 	
 
     /*  Create the listening socket  */
 
     if ( (conn_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
-	fprintf(stderr, "ECHOCLNT: Error creating listening socket.\n");
-	exit(EXIT_FAILURE);
+    	fprintf(stderr, "ECHOCLNT: Error creating listening socket.\n");
+    	exit(EXIT_FAILURE);
+    } else {
+        fprintf(stderr, "Listening socket created.\n");
     }
 
 
@@ -81,16 +83,20 @@ int main(int argc, char *argv[]) {
     /*  Set the remote IP address  */
 
     if ( inet_aton(szAddress, &servaddr.sin_addr) <= 0 ) {
-	printf("ECHOCLNT: Invalid remote IP address.\n");
-	exit(EXIT_FAILURE);
+    	printf("ECHOCLNT: Invalid remote IP address.\n");
+    	exit(EXIT_FAILURE);
+    } else {
+        fprintf(stderr, "IP address set.\n");
     }
 
     
     /*  connect() to the remote echo server  */
 
     if ( connect(conn_s, (struct sockaddr *) &servaddr, sizeof(servaddr) ) < 0 ) {
-	printf("ECHOCLNT: Error calling connect()\n");
-	exit(EXIT_FAILURE);
+    	printf("ECHOCLNT: Error calling connect()\n");
+    	exit(EXIT_FAILURE);
+    } else {
+        fprintf(stderr, "Connected to the server.\n");
     }
 
 
@@ -103,9 +109,9 @@ int main(int argc, char *argv[]) {
         if (strncmp(buffer, "s", 1) == 0) {
             printf("\nPlease Enter a string: ");
             fgets(buffer_send, MAX_LINE, stdin);
+            /* Format the input string */
             Writeline(conn_s, buffer_send, strlen(buffer));
         } 
-
         else if (strncmp(buffer, "t", 1) == 0) {
             printf("\nPlease Enter a string: ");
             fgets(buffer_send, MAX_LINE, stdin);
@@ -119,8 +125,6 @@ int main(int argc, char *argv[]) {
     
 
     /*  Send string to echo server, and retrieve response  */
-
-    
     Readline(conn_s, buffer_received, MAX_LINE-1);
     printf("Server responded: %s", buffer_received);
 
@@ -132,7 +136,7 @@ int main(int argc, char *argv[]) {
 
     /*  Output echoed string  */
 
-    printf("Echo response: %s\n", buffer);
+    printf("Echo response: %s\n", buffer_received);
 
     return EXIT_SUCCESS;
 }
