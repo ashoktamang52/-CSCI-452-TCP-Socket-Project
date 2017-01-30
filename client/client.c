@@ -109,8 +109,9 @@ int main(int argc, char *argv[]) {
         if (strncmp(buffer, "s", 1) == 0) {
             printf("\nPlease Enter a string: ");
             fgets(buffer_send, MAX_LINE, stdin);
+            fprintf(stderr, "Buffer %s\n", buffer_send);
             /* Format the input string */
-            Writeline(conn_s, buffer_send, strlen(buffer));
+            Writeline(conn_s, buffer_send, strlen(buffer_send));
             /*  Send string to echo server, and retrieve response  */
             Readline(conn_s, buffer_received, MAX_LINE-1);
             printf("Server responded: %s", buffer_received);

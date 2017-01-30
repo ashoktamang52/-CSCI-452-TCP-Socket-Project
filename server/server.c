@@ -92,26 +92,27 @@ int main(int argc, char *argv[]) {
 
     while ( 1 ) {
 
-	/*  Wait for a connection, then accept() it  */
+    	/*  Wait for a connection, then accept() it  */
 
-	if ( (conn_s = accept(list_s, NULL, NULL) ) < 0 ) {
-	    fprintf(stderr, "ECHOSERV: Error calling accept()\n");
-	    exit(EXIT_FAILURE);
-	}
-
-
-	/*  Retrieve an input line from the connected socket
-	    then simply write it back to the same socket.     */
-
-	Readline(conn_s, buffer, MAX_LINE-1);
-	Writeline(conn_s, buffer, strlen(buffer));
+    	if ( (conn_s = accept(list_s, NULL, NULL) ) < 0 ) {
+    	    fprintf(stderr, "ECHOSERV: Error calling accept()\n");
+    	    exit(EXIT_FAILURE);
+    	}
 
 
-	/*  Close the connected socket  */
+    	/*  Retrieve an input line from the connected socket
+    	    then simply write it back to the same socket.     */
 
-	if ( close(conn_s) < 0 ) {
-	    fprintf(stderr, "ECHOSERV: Error calling close()\n");
-	    exit(EXIT_FAILURE);
-	}
+    	Readline(conn_s, buffer, MAX_LINE-1);
+        fprintf(stderr, "Buffered %s\n", buffer);
+    	Writeline(conn_s, buffer, strlen(buffer));
+
+
+    	/*  Close the connected socket  */
+
+    	if ( close(conn_s) < 0 ) {
+    	    fprintf(stderr, "ECHOSERV: Error calling close()\n");
+    	    exit(EXIT_FAILURE);
+    	}
     }
 }
