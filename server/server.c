@@ -107,6 +107,12 @@ int main(int argc, char *argv[]) {
 
             Readline(conn_s, buffer, MAX_LINE-1);
             fprintf(stderr, "Buffered %s\n", buffer);
+            /* When client wants to capitalize the string */
+            fprintf(stderr, "%d\n", strlen(buffer));
+            if (strncmp(buffer, "CAP", 3)) {
+                Readline(conn_s, buffer, MAX_LINE-1);
+                fprintf(stderr, "Real message: %s\n", buffer);
+            }
             Writeline(conn_s, buffer, strlen(buffer));
         }
     	
