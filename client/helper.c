@@ -29,22 +29,22 @@ ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 
     for ( n = 1; n < maxlen; n++ ) {
 	
-	if ( (rc = read(sockd, &c, 1)) == 1 ) {
-	    *buffer++ = c;
-	    if ( c == '\n' )
-		break;
-	}
-	else if ( rc == 0 ) {
-	    if ( n == 1 )
-		return 0;
-	    else
-		break;
-	}
-	else {
-	    if ( errno == EINTR )
-		continue;
-	    return -1;
-	}
+		if ( (rc = read(sockd, &c, 1)) == 1 ) {
+		    *buffer++ = c;
+		    if ( c == '\n' )
+			break;
+		}
+		else if ( rc == 0 ) {
+		    if ( n == 1 )
+			return 0;
+		    else
+			break;
+		}
+		else {
+		    if ( errno == EINTR )
+			continue;
+		    return -1;
+		}
     }
 
     *buffer = 0;
@@ -63,14 +63,14 @@ ssize_t Writeline(int sockd, const void *vptr, size_t n) {
     nleft  = n;
 
     while ( nleft > 0 ) {
-	if ( (nwritten = write(sockd, buffer, nleft)) <= 0 ) {
-	    if ( errno == EINTR )
-		nwritten = 0;
-	    else
-		return -1;
-	}
-	nleft  -= nwritten;
-	buffer += nwritten;
+		if ( (nwritten = write(sockd, buffer, nleft)) <= 0 ) {
+		    if ( errno == EINTR )
+				nwritten = 0;
+		    else
+				return -1;
+		}
+		nleft  -= nwritten;
+		buffer += nwritten;
     }
 
     return n;

@@ -112,12 +112,14 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Buffer %s\n", buffer);
 
             /* Format the input string */
+
             strcpy(buffer_send, "CAP\n");
             strcat(buffer_send, buffer);
             strcat(buffer_send, "\n");
+            fprintf(stderr, "%s\n", buffer_send);
 
             Writeline(conn_s, buffer_send, strlen(buffer_send));
-            /*  Send string to echo server, and retrieve response  */
+            /*  Send string to echo server, and retrieve response */
             Readline(conn_s, buffer, MAX_LINE-1);
             printf("Server responded: %s", buffer);
         }
