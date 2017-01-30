@@ -59,9 +59,10 @@ int main(int argc, char *argv[]) {
     /*  Create the listening socket  */
 
     if ( (list_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
-	fprintf(stderr, "ECHOSERV: Error creating listening socket.\n");
-	exit(EXIT_FAILURE);
-    }
+    	perror("ECHOSERV: Error creating listening socket.\n");
+
+    	exit(EXIT_FAILURE);
+        }
 
 
     /*  Set all bytes in socket address structure to
@@ -77,20 +78,21 @@ int main(int argc, char *argv[]) {
 	listening socket, and call listen()  */
 
     if ( bind(list_s, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0 ) {
-	fprintf(stderr, "ECHOSERV: Error calling bind()\n");
-	exit(EXIT_FAILURE);
-    }
+    	fprintf(stderr, "ECHOSERV: Error calling bind()\n");
+    	exit(EXIT_FAILURE);
+        }
 
     if ( listen(list_s, LISTENQ) < 0 ) {
-	fprintf(stderr, "ECHOSERV: Error calling listen()\n");
-	exit(EXIT_FAILURE);
-    }
+    	perror("ECHOSERV: Error calling listen()\n");
+    	exit(EXIT_FAILURE);
+        }
 
     
     /*  Enter an infinite loop to respond
         to client requests and echo input  */
 
     while ( 1 ) {
+        fprintf(stderr, "Does it go here?\n");
 
     	/*  Wait for a connection, then accept() it  */
 
@@ -99,20 +101,23 @@ int main(int argc, char *argv[]) {
     	    exit(EXIT_FAILURE);
     	}
 
+        while (1 ) {
+            /*  Retrieve an input line from the connected socket
+            then simply write it back to the same socket.     */
 
-    	/*  Retrieve an input line from the connected socket
-    	    then simply write it back to the same socket.     */
-
-    	Readline(conn_s, buffer, MAX_LINE-1);
-        fprintf(stderr, "Buffered %s\n", buffer);
-    	Writeline(conn_s, buffer, strlen(buffer));
-
+            Readline(conn_s, buffer, MAX_LINE-1);
+            fprintf(stderr, "Buffered %s\n", buffer);
+            Writeline(conn_s, buffer, strlen(buffer));
+        }
+    	
 
     	/*  Close the connected socket  */
-
     	if ( close(conn_s) < 0 ) {
-    	    fprintf(stderr, "ECHOSERV: Error calling close()\n");
+    	    perror("ECHOSERV: Error calling close()\n");
     	    exit(EXIT_FAILURE);
     	}
+        else {
+            fprintf(stderr, "Connection closed.\n");
+        }
     }
 }
