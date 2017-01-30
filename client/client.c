@@ -111,27 +111,35 @@ int main(int argc, char *argv[]) {
             fgets(buffer_send, MAX_LINE, stdin);
             /* Format the input string */
             Writeline(conn_s, buffer_send, strlen(buffer));
+            /*  Send string to echo server, and retrieve response  */
+            Readline(conn_s, buffer_received, MAX_LINE-1);
+            printf("Server responded: %s", buffer_received);
         } 
         else if (strncmp(buffer, "t", 1) == 0) {
             printf("\nPlease Enter a string: ");
             fgets(buffer_send, MAX_LINE, stdin);
             Writeline(conn_s, buffer_send, strlen(buffer));
         }
-        else if (strncmp(buffer, "q", 1) == 0)
-            break;
+        else if (strncmp(buffer, "q", 1) == 0) {
+            fprintf(stderr, "Now should exit.\n");
+            if (close(conn_s) < 0 ) {
+                fprintf(stderr, "ECHOSERV: Error calling close()\n");
+                exit(EXIT_FAILURE);
+            }
+            return EXIT_SUCCESS;
+        }
         else
             printf("\nInvalid Command: Press 's' for echo, 't' for file storage and 'q' for exit.\n");
     } while (strncmp(buffer, "q", 1) != 0);
     
 
     /*  Send string to echo server, and retrieve response  */
+    /*
     Readline(conn_s, buffer_received, MAX_LINE-1);
     printf("Server responded: %s", buffer_received);
+    */
 
-    if (close(conn_s) < 0 ) {
-        fprintf(stderr, "ECHOSERV: Error calling close()\n");
-        exit(EXIT_FAILURE);
-    }
+    
 
 
     /*  Output echoed string  */
