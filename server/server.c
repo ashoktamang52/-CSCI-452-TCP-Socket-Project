@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
 
                 /* Capitalize the messsage */
                 int index = 0;
-                while (to_capitalize[index]) {
+                while (to_capitalize[index] != '\0') {
                     if (islower(to_capitalize[index])) {
                         to_capitalize[index] = toupper(to_capitalize[index]);
                     }
@@ -128,9 +128,17 @@ int main(int argc, char *argv[]) {
                     index++;
                 }
                 fprintf(stderr, "Captialled: %s\n", to_capitalize);
+
+                /* parse the capitalized message to send to the client */
+                char buffer_send[MAX_LINE];
+                sprintf(buffer_send, "%d", strlen(to_capitalize));
+                strcat(buffer_send, "\n");
+                strcat(buffer_send, to_capitalize);
+                fprintf(stderr, "to be sent: %s\n", buffer_send);
+
+                /* send the formatted message to the client */
+                write(conn_s, buffer_send, strlen(buffer_send));
             }
-            write(conn_s, buffer, strlen(buffer));
-            /*Writeline(conn_s, buffer, strlen(buffer));*/  
         }
             
         /* When client wants to capitalize the string */
