@@ -132,13 +132,14 @@ int main(int argc, char *argv[]) {
             strcpy(buffer_send, "FILE\n");
             strcat(buffer_send, buffer);
             strcat(buffer_send, "\n");
+            fprintf(stderr, "Length %d\n", strlen(buffer_send));
             fprintf(stderr, "%s\n", buffer_send);
 
             /* Send message to server. */
             write(conn_s, buffer_send, strlen(buffer_send));
             /* Read message from server. */
             read(conn_s, buffer_received, MAX_LINE-1);
-            fprintf(stderr, "%s\n", buffer_received);
+            fprintf(stderr, "Server responded: %s\n", buffer_received);
         }
         else if (strncmp(buffer, "q", 1) == 0) {
             fprintf(stderr, "Now should exit.\n");

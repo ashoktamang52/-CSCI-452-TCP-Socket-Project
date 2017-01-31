@@ -110,9 +110,15 @@ int main(int argc, char *argv[]) {
             read(conn_s, buffer, MAX_LINE-1);
             fprintf(stderr, "Buffered %s\n", buffer);
 
+            fprintf(stderr, "Buffer length %d\n", strlen(buffer));
+
             if (strncmp(buffer, "CAP", 3) == 0) {
-                char to_capitalize[strlen(buffer) - 5];
-                memcpy(to_capitalize, buffer + 4, strlen(buffer) - 5);
+                /* number of relevant bytes of message 
+                   = buffer length - 'CAP' length - length of two line breaks - end of string 
+                */
+
+                char to_capitalize[strlen(buffer) - 6];
+                memcpy(to_capitalize, buffer + 4, strlen(buffer) - 6);
                 fprintf(stderr, "Real message please?: %s\n", to_capitalize);
 
                 /* Capitalize the messsage */
@@ -140,8 +146,20 @@ int main(int argc, char *argv[]) {
             }
 
             if (strncmp(buffer, "FILE", 4) == 0) {
-                char file_name[strlen(buffer) - 6];
-                memcpy(file_name, buffer + 5, strlen(buffer) - 6);
+                char file_name[strlen(buffer) - 7];
+                memcpy(file_name, buffer + 5, strlen(buffer) - 7);
+                fprintf(stderr, "File Name should be: %s\n", file_name);
+                fprintf(stderr, "Length %d\n", strlen(file_name));
+
+                /* Find file name and read that file */
+                FILE *fp;
+                fp = fopen(file_name, "rb");
+                if (fp) {
+
+                } else {
+                    /* No such file */
+                    fprintf(stderr, "Not Found\n");
+                }
 
                 write(conn_s, file_name, strlen(file_name));
             }
