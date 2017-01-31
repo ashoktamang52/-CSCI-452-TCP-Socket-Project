@@ -32,17 +32,17 @@ ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 		if ( (rc = read(sockd, &c, 1)) == 1 ) {
 		    *buffer++ = c;
 		    if ( c == '\n' )
-			break;
+				break;
 		}
 		else if ( rc == 0 ) {
 		    if ( n == 1 )
-			return 0;
+				return 0;
 		    else
-			break;
+				break;
 		}
 		else {
 		    if ( errno == EINTR )
-			continue;
+				continue;
 		    return -1;
 		}
     }

@@ -118,9 +118,11 @@ int main(int argc, char *argv[]) {
             strcat(buffer_send, "\n");
             fprintf(stderr, "%s\n", buffer_send);
 
-            Writeline(conn_s, buffer_send, strlen(buffer_send));
+            /*Writeline(conn_s, buffer_send, strlen(buffer_send));*/
             /*  Send string to echo server, and retrieve response */
-            Readline(conn_s, buffer, MAX_LINE-1);
+            /*Readline(conn_s, buffer, MAX_LINE-1);*/
+            write(conn_s, buffer_send, strlen(buffer_send));
+            read(conn_s, buffer, MAX_LINE-1);
             printf("Server responded: %s", buffer);
         }
         else if (strncmp(buffer, "t", 1) == 0) {

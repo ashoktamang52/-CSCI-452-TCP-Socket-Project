@@ -37,11 +37,6 @@ int main(int argc, char *argv[]) {
     char      buffer[MAX_LINE];      /*  character buffer          */
     char     *endptr;                /*  for strtol()              */
 
-    /* Waiting for socket to be ready to send data */
-    fd_set fds;
-    struct timeval timeout;
-    int rc, result;
-
 
     /*  Get port number from the command line, and
         set to default port if no arguments were supplied  */
@@ -86,12 +81,12 @@ int main(int argc, char *argv[]) {
     if ( bind(list_s, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0 ) {
     	fprintf(stderr, "ECHOSERV: Error calling bind()\n");
     	exit(EXIT_FAILURE);
-        }
+    }
 
     if ( listen(list_s, LISTENQ) < 0 ) {
     	perror("ECHOSERV: Error calling listen()\n");
     	exit(EXIT_FAILURE);
-        }
+     }
 
     
     /*  Enter an infinite loop to respond
@@ -109,28 +104,23 @@ int main(int argc, char *argv[]) {
 
             /*  Retrieve an input line from the connected socket
             then simply write it back to the  same socket.     */
-        char capitalize[4];
-        strcpy(capitalize, "CAP\n");
 
-        /* use select() to wait for socket to be ready to send data */
-        timeout.tv_sec = 3; timeout.tv_usec = 0;
-        FD_ZERO(&fds); FD_SET(conn_s, &fds);
-        rc = select(sizeof(fds) * 8, &fds, NULL, NULL, &timeout);
-        if (rc == - 1) {
-            perror("select failed");
-            return -1;
-        }
-        else if (rc > 0) {
-            if (FD_ISSET(conn_s, &fds)) {
-                Readline(conn_s, buffer, MAX_LINE-1);
-                fprintf(stderr, "Buffered %s\n", buffer);
-                Writeline(conn_s, buffer, strlen(buffer));
+        while (1) {
+            /*Readline(conn_s, buffer, MAX_LINE-1);*/
+            read(conn_s, buffer, MAX_LINE-1);
+            fprintf(stderr, "Buffered %s\n", buffer);
+
+            if (strncmp(buffer, "CAP", 3) == 0) {
+                fprintf(stderr, "Need to capitalize\n");
+                char capitalize[strlen(buffer) - 4];
+                memcpy(capitalize, buffer + 4, strlen(buffer) - 4);
+                fprintf(stderr, "Real message please?: %s\n", capitalize);
             }
+            write(conn_s, buffer, strlen(buffer));
+            /*Writeline(conn_s, buffer, strlen(buffer));*/  
         }
-        
-        /* while (strncmp(buffer, capitalize, 4) && strncmp(buffer[strlen(buffer) - 1], "\n", 1)) { */
             
-            /* When client wants to capitalize the string */
+        /* When client wants to capitalize the string */
             
         
                 
