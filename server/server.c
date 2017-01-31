@@ -111,9 +111,8 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Buffered %s\n", buffer);
 
             if (strncmp(buffer, "CAP", 3) == 0) {
-                fprintf(stderr, "Need to capitalize\n");
-                char to_capitalize[strlen(buffer) - 4];
-                memcpy(to_capitalize, buffer + 4, strlen(buffer) - 4);
+                char to_capitalize[strlen(buffer) - 5];
+                memcpy(to_capitalize, buffer + 4, strlen(buffer) - 5);
                 fprintf(stderr, "Real message please?: %s\n", to_capitalize);
 
                 /* Capitalize the messsage */
@@ -138,6 +137,13 @@ int main(int argc, char *argv[]) {
 
                 /* send the formatted message to the client */
                 write(conn_s, buffer_send, strlen(buffer_send));
+            }
+
+            if (strncmp(buffer, "FILE", 4) == 0) {
+                char file_name[strlen(buffer) - 6];
+                memcpy(file_name, buffer + 5, strlen(buffer) - 6);
+
+                write(conn_s, file_name, strlen(file_name));
             }
         }
             

@@ -118,17 +118,27 @@ int main(int argc, char *argv[]) {
             strcat(buffer_send, "\n");
             fprintf(stderr, "%s\n", buffer_send);
 
-            /*Writeline(conn_s, buffer_send, strlen(buffer_send));*/
-            /*  Send string to echo server, and retrieve response */
-            /*Readline(conn_s, buffer, MAX_LINE-1);*/
             write(conn_s, buffer_send, strlen(buffer_send));
-            read(conn_s, buffer, MAX_LINE-1);
+            read(conn_s, buffer_received, MAX_LINE-1);
+
+            memcpy(buffer, buffer_received + 2, strlen(buffer_received) - 2);
             printf("Server responded: %s", buffer);
         }
         else if (strncmp(buffer, "t", 1) == 0) {
             printf("\nPlease Enter a string: ");
-            fgets(buffer_send, MAX_LINE, stdin);
-            Writeline(conn_s, buffer_send, strlen(buffer));
+            fgets(buffer, MAX_LINE, stdin);
+
+            /* Format the input string */
+            strcpy(buffer_send, "FILE\n");
+            strcat(buffer_send, buffer);
+            strcat(buffer_send, "\n");
+            fprintf(stderr, "%s\n", buffer_send);
+
+            /* Send message to server. */
+            write(conn_s, buffer_send, strlen(buffer_send));
+            /* Read message from server. */
+            read(conn_s, buffer_received, MAX_LINE-1);
+            fprintf(stderr, "%s\n", buffer_received);
         }
         else if (strncmp(buffer, "q", 1) == 0) {
             fprintf(stderr, "Now should exit.\n");
