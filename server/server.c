@@ -17,7 +17,7 @@
 #include <unistd.h>           /*  misc. UNIX functions      */
 
 #include "helper.h"           /*  our own helper functions  */
-
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -112,9 +112,22 @@ int main(int argc, char *argv[]) {
 
             if (strncmp(buffer, "CAP", 3) == 0) {
                 fprintf(stderr, "Need to capitalize\n");
-                char capitalize[strlen(buffer) - 4];
-                memcpy(capitalize, buffer + 4, strlen(buffer) - 4);
-                fprintf(stderr, "Real message please?: %s\n", capitalize);
+                char to_capitalize[strlen(buffer) - 4];
+                memcpy(to_capitalize, buffer + 4, strlen(buffer) - 4);
+                fprintf(stderr, "Real message please?: %s\n", to_capitalize);
+
+                /* Capitalize the messsage */
+                int index = 0;
+                while (to_capitalize[index]) {
+                    if (islower(to_capitalize[index])) {
+                        to_capitalize[index] = toupper(to_capitalize[index]);
+                    }
+                    else {
+                        to_capitalize[index] = to_capitalize[index];
+                    }
+                    index++;
+                }
+                fprintf(stderr, "Captialled: %s\n", to_capitalize);
             }
             write(conn_s, buffer, strlen(buffer));
             /*Writeline(conn_s, buffer, strlen(buffer));*/  
