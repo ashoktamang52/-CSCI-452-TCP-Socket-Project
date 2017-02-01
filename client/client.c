@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
             char temp[strlen(buffer) - 1];
             memcpy(temp, buffer, strlen(buffer) - 1);
 
-            fp = fopen(temp, "wb");
+            
 
             /* Format the input string */
             strcpy(buffer_send, "FILE\n");
@@ -151,8 +151,15 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Buffer size: %d\n", strlen(buffer_received));
 
             /* write the data to the file. */
-            fwrite(buffer_received, 1, strlen(buffer_received), fp);
-            fclose(fp);
+            if (strncmp(buffer_received + 2, "NOT FOUND", 9) == 0) {
+                printf("%s\n", buffer_received + 2);
+            }
+            else {
+                fp = fopen(temp, "wb");
+                fwrite(buffer_received, 1, strlen(buffer_received), fp);
+                fclose(fp);
+            }
+            
 
         }
         else if (strncmp(buffer, "q", 1) == 0) {
