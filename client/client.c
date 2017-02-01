@@ -193,24 +193,16 @@ int main(int argc, char *argv[]) {
 
 
 int ParseCmdLine(int argc, char *argv[], char **szAddress, char **szPort) {
-
-    int n = 1;
-
-    while ( n < argc ) {
-	if ( !strncmp(argv[n], "-a", 2) || !strncmp(argv[n], "-A", 2) ) {
-	    *szAddress = argv[++n];
-	}
-	else if ( !strncmp(argv[n], "-p", 2) || !strncmp(argv[n], "-P", 2) ) {
-	    *szPort = argv[++n];
-	}
-	else if ( !strncmp(argv[n], "-h", 2) || !strncmp(argv[n], "-H", 2) ) {
+    /* Number of arguments: <clent> <ip> <port> (3 arguments). */
+    if (argc == 3) {
+        *szAddress = argv[1];
+	    *szPort = argv[2];
+    }
+	else {
 	    printf("Usage:\n\n");
-	    printf("    timeclnt -a (remote IP) -p (remote port)\n\n");
+	    printf("    <client> <IP address> <remote Port>\n\n");
 	    exit(EXIT_SUCCESS);
 	}
-	++n;
-    }
-
     return 0;
 }
 

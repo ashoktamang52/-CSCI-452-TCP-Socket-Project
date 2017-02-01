@@ -24,8 +24,6 @@
 
 
 /*  Global constants  */
-
-#define ECHO_PORT          (2002)
 #define MAX_LINE           (1000)
 
 
@@ -48,9 +46,6 @@ int main(int argc, char *argv[]) {
     	    fprintf(stderr, "ECHOSERV: Invalid port number.\n");
     	    exit(EXIT_FAILURE);
 	   }
-    }
-    else if ( argc < 2 ) {
-	   port = ECHO_PORT;
     }
     else {
     	fprintf(stderr, "ECHOSERV: Invalid arguments.\n");
