@@ -153,9 +153,38 @@ int main(int argc, char *argv[]) {
                 fprintf(stderr, "Length %d\n", strlen(file_name));
 
                 /* Find file name and read that file */
-                FILE *fp;
+                FILE *fp; /* file pointer */
                 fp = fopen(file_name, "rb");
                 if (fp) {
+                    long lSize;
+                    char* large_buffer;
+                    size_t result;
+
+                    /* obtain file size */
+                    fseek(fp, 0, SEEK_END);
+                    lSize = ftell(fp);
+                    rewind(fp); /* Put the postion of pointer back to the start of the file */
+
+                    /* allocate memory to hold the whole file */
+                    large_buffer = (void* ) malloc(sizeof(void*) * lSize);
+                    if (large_buffer == NULL) {
+                        perror("Error in allocating required memory: ");
+                    }
+
+                    /* copy the file into the buffer */
+                    result = fread(large_buffer, 1, lSize, fp);
+                    if (result != lSize) {
+                        printf("Error reading whole file.\n");
+                    }
+
+                    /* close the file and later free the large_buffer */
+                    fclose(fp);
+
+                    fprintf(stderr, "The read large bufffer: %s\n", large_buffer);
+
+                    /* send the buffer to the client */
+                    write(conn_s, large_buffer, lSize);
+
 
 
                 } else {
@@ -164,6 +193,8 @@ int main(int argc, char *argv[]) {
                     strcpy(buffer, "NOT FOUND");
                     sprintf(buffer_send, "%d", strlen(buffer));
                     strcat(buffer_send, buffer);
+
+                    /* Inform client that file is not in the server. */
                     write(conn_s, buffer_send, strlen(buffer_send));
                 }
 
