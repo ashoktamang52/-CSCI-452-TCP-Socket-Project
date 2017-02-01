@@ -147,8 +147,8 @@ int main(int argc, char *argv[]) {
             }
 
             if (strncmp(buffer, "FILE", 4) == 0) {
-                char file_name[strlen(buffer) - 7];
-                memcpy(file_name, buffer + 5, strlen(buffer) - 7);
+                char file_name[strlen(buffer) - 6];
+                memcpy(file_name, buffer + 5, strlen(buffer) - 6);
                 fprintf(stderr, "File Name should be: %s\n", file_name);
                 fprintf(stderr, "Length %d\n", strlen(file_name));
 

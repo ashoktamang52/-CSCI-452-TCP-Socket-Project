@@ -130,13 +130,15 @@ int main(int argc, char *argv[]) {
 
 
             FILE *fp; /*file pointer*/
-            fprintf(stderr, "Real file name?: %s\n", buffer);
-            fp = fopen(buffer, "wb");
+            fprintf(stderr, "Real file name?: %d\n", strlen(buffer));
+            char temp[strlen(buffer) - 1];
+            memcpy(temp, buffer, strlen(buffer) - 1);
+
+            fp = fopen(temp, "wb");
 
             /* Format the input string */
             strcpy(buffer_send, "FILE\n");
             strcat(buffer_send, buffer);
-            strcat(buffer_send, "\n");
             fprintf(stderr, "Length %d\n", strlen(buffer_send));
             fprintf(stderr, "%s\n", buffer_send);
 
@@ -148,22 +150,8 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Server responded: %s\n", buffer_received);
             fprintf(stderr, "Buffer size: %d\n", strlen(buffer_received));
 
-            /* separate file size and file data
-            int offset = 0;
-            while (strncmp(buffer_received + offset, "\n", 1) == 0) {
-                fprintf(stderr, "You go here?\n");
-                offset++;
-            }
-            char* length;
-            fprintf(stderr, "%d.\n", offset);
-            length = (char* ) malloc(sizeof(char) * offset);
-            memcpy(length, buffer_received, offset);
-            fprintf(stderr, "Length re: %s\n", length);
-            fprintf(stderr, "first token: %s\n", buffer_received + 3);
-            fprintf(stderr, "Does the buffer change?%s\n", buffer_received);
-            */
             /* write the data to the file. */
-            fwrite(buffer_received, 1, 45, fp);
+            fwrite(buffer_received, 1, strlen(buffer_received), fp);
             fclose(fp);
 
         }
