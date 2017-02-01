@@ -209,7 +209,7 @@ int main(int argc, char *argv[]) {
 
             /* free the memory */
             memset(buffer, 0, (sizeof buffer[0]) * MAX_LINE);
-            memset(buffer_send, 0, (sizeof buffer_send[0]) * strlen(buffer_send));
+            memset(buffer_send, 0, (sizeof buffer_send[0]) * MAX_LINE);
         }
 
     	/*  Close the connected socket  */

@@ -114,6 +114,9 @@ int main(int argc, char *argv[]) {
             write(conn_s, buffer_send, strlen(buffer_send));
             read(conn_s, buffer_received, MAX_LINE-1);
 
+            /* reset buffer to get only relevant string */
+            memset(buffer, 0, (sizeof buffer[0]) * MAX_LINE);
+            
             memcpy(buffer, buffer_received + 2, strlen(buffer_received) - 2);
             printf("Server responded: %s", buffer);
         }
@@ -133,15 +136,15 @@ int main(int argc, char *argv[]) {
 
             /* Read message from server. */
             read(conn_s, buffer_received, MAX_LINE-1);
-            fprintf(stderr, "Server responded: %s\n", buffer_received);
  
             /* write the data to the file. */
             if (strncmp(buffer_received + 2, "NOT FOUND", 9) == 0) {
-                printf("%s\n", buffer_received + 2);
+                printf("Server responded: %s\n", buffer_received + 2);
             }
             else {
                 fp = fopen(file_name, "wb");
                 fwrite(buffer_received, 1, strlen(buffer_received), fp);
+                printf("Server responded: Data is written to the file named: %s\n", file_name);
                 /* close the file and free the memory */
                 fclose(fp);
                 free(file_name);
@@ -153,18 +156,17 @@ int main(int argc, char *argv[]) {
                 fprintf(stderr, "ECHOSERV: Error calling close()\n");
                 exit(EXIT_FAILURE);
             }
-            /* free the memory */
-            memset(buffer, 0, (sizeof buffer[0]) * MAX_LINE);
-            memset(buffer_send, 0, (sizeof buffer_send[0]) * strlen(buffer_send));
-            memset(buffer_received, 0, (sizeof buffer_received[0]) * strlen(buffer_received));
-            
+
             return EXIT_SUCCESS;
         }
         else 
             printf("\nInvalid Command: Press 's' for echo, 't' for file storage and 'q' for exit.\n");
 
-        
-        
+        /* free the memory */
+        memset(buffer, 0, (sizeof buffer[0]) * MAX_LINE);
+        memset(buffer_send, 0, (sizeof buffer_send[0]) * MAX_LINE);
+        memset(buffer_received, 0, (sizeof buffer_received[0]) * MAX_LINE);
+    
     } while (strncmp(buffer, "q", 1) != 0);
 
     return EXIT_SUCCESS;
