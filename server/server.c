@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
     short int port;                  /*  port number               */
     struct    sockaddr_in servaddr;  /*  socket address structure  */
     char      buffer[MAX_LINE];      /*  character buffer          */
+    char      buffer_send[MAX_LINE];
     char     *endptr;                /*  for strtol()              */
 
 
@@ -135,7 +136,7 @@ int main(int argc, char *argv[]) {
                 fprintf(stderr, "Captialled: %s\n", to_capitalize);
 
                 /* parse the capitalized message to send to the client */
-                char buffer_send[MAX_LINE];
+                
                 sprintf(buffer_send, "%d", strlen(to_capitalize));
                 strcat(buffer_send, "\n");
                 strcat(buffer_send, to_capitalize);
@@ -156,12 +157,16 @@ int main(int argc, char *argv[]) {
                 fp = fopen(file_name, "rb");
                 if (fp) {
 
+
                 } else {
                     /* No such file */
                     fprintf(stderr, "Not Found\n");
+                    strcpy(buffer, "NOT FOUND");
+                    sprintf(buffer_send, "%d", strlen(buffer));
+                    strcat(buffer_send, buffer);
+                    write(conn_s, buffer_send, strlen(buffer_send));
                 }
 
-                write(conn_s, file_name, strlen(file_name));
             }
         }
             
