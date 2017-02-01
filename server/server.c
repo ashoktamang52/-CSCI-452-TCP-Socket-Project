@@ -1,7 +1,13 @@
 /*
 
-  ECHOSERV.C
+  SERVER.C
   ==========
+  (c) Ashok Tamang, 2017
+  Email: ashok.tamang@bison.howard.edu
+  Networking and Web Programming, Spring 2017
+
+  -------------------------
+  Adapted from EchoServ by:
   (c) Paul Griffiths, 1999
   Email: mail@paulgriffiths.net
   
@@ -16,7 +22,6 @@
 #include <arpa/inet.h>        /*  inet (3) funtions         */
 #include <unistd.h>           /*  misc. UNIX functions      */
 
-#include "helper.h"           /*  our own helper functions  */
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -25,6 +30,8 @@
 
 /*  Global constants  */
 #define MAX_LINE           (1000)
+#define LISTENQ            (1024)   /*  Backlog for listen()   */
+
 
 
 int main(int argc, char *argv[]) {
@@ -35,10 +42,12 @@ int main(int argc, char *argv[]) {
     char      buffer[MAX_LINE];      /*  character buffer          */
     char      buffer_send[MAX_LINE];
     char     *endptr;                /*  for strtol()              */
+    char     *to_capitalize;         /*  store user string to capitalize */
+    char     *file_name;             /*  for storing file_name to be searched in the server */
+    FILE     *fp;                    /*  file pointer */
 
 
-    /*  Get port number from the command line, and
-        set to default port if no arguments were supplied  */
+    /*  Get port number from the command line.*/
 
     if ( argc == 2 ) {
     	port = strtol(argv[1], &endptr, 0);
@@ -49,6 +58,8 @@ int main(int argc, char *argv[]) {
     }
     else {
     	fprintf(stderr, "ECHOSERV: Invalid arguments.\n");
+        printf("Usage:\n\n");
+        printf("    <server> <remote Port>\n\n");
     	exit(EXIT_FAILURE);
     }
 
@@ -59,7 +70,7 @@ int main(int argc, char *argv[]) {
     	perror("ECHOSERV: Error creating listening socket.\n");
 
     	exit(EXIT_FAILURE);
-        }
+    }
 
 
     /*  Set all bytes in socket address structure to
@@ -85,12 +96,9 @@ int main(int argc, char *argv[]) {
      }
 
     
-    /*  Enter an infinite loop to respond
-        to client requests and echo input  */
+    /*  Enter an infinite loop to respond to client requests.  */
 
     while ( 1 ) {
-        fprintf(stderr, "Does it go here?\n");
-
     	/*  Wait for a connection, then accept() it  */
 
     	if ( (conn_s = accept(list_s, NULL, NULL) ) < 0 ) {
@@ -98,24 +106,21 @@ int main(int argc, char *argv[]) {
     	    exit(EXIT_FAILURE);
     	}
 
-            /*  Retrieve an input line from the connected socket
-            then simply write it back to the  same socket.     */
+        /*  
+          Retrieve an input line from the connected socket
+          then simply write it back to the  same socket.     
+        */
 
         while (1) {
-            /*Readline(conn_s, buffer, MAX_LINE-1);*/
             read(conn_s, buffer, MAX_LINE-1);
-            fprintf(stderr, "Buffered %s\n", buffer);
-
-            fprintf(stderr, "Buffer length %d\n", strlen(buffer));
 
             if (strncmp(buffer, "CAP", 3) == 0) {
                 /* number of relevant bytes of message 
                    = buffer length - 'CAP' length - length of two line breaks - end of string 
                 */
 
-                char to_capitalize[strlen(buffer) - 6];
+                to_capitalize =  (char* ) malloc(sizeof(char*) * (strlen(buffer) - 6));
                 memcpy(to_capitalize, buffer + 4, strlen(buffer) - 6);
-                fprintf(stderr, "Real message please?: %s\n", to_capitalize);
 
                 /* Capitalize the messsage */
                 int index = 0;
@@ -128,27 +133,26 @@ int main(int argc, char *argv[]) {
                     }
                     index++;
                 }
-                fprintf(stderr, "Captialled: %s\n", to_capitalize);
 
                 /* parse the capitalized message to send to the client */
                 
                 sprintf(buffer_send, "%d", strlen(to_capitalize));
                 strcat(buffer_send, "\n");
                 strcat(buffer_send, to_capitalize);
-                fprintf(stderr, "to be sent: %s\n", buffer_send);
 
                 /* send the formatted message to the client */
                 write(conn_s, buffer_send, strlen(buffer_send));
+
+                /* free the memory */
+                free(to_capitalize);
+                
             }
 
             if (strncmp(buffer, "FILE", 4) == 0) {
-                char file_name[strlen(buffer) - 6];
+                file_name = (char* ) malloc (sizeof(char*) * (strlen(buffer) - 6));
                 memcpy(file_name, buffer + 5, strlen(buffer) - 6);
-                fprintf(stderr, "File Name should be: %s\n", file_name);
-                fprintf(stderr, "Length %d\n", strlen(file_name));
 
                 /* Find file name and read that file */
-                FILE *fp; /* file pointer */
                 fp = fopen(file_name, "rb");
                 if (fp) {
                     long lSize;
@@ -175,9 +179,6 @@ int main(int argc, char *argv[]) {
                     /* close the file and later free the large_buffer */
                     fclose(fp);
 
-                    fprintf(stderr, "The read large bufffer: %s\n", large_buffer);
-                    fprintf(stderr, "The size of large buffer: %d\n", lSize );
-
                     /* send the buffer to the client */
                     if (MAX_LINE < lSize) {
                         strcpy(buffer_send, "The buffer size is smaller than what needs to be sent.");
@@ -190,11 +191,11 @@ int main(int argc, char *argv[]) {
                         write(conn_s, buffer_send, lSize);
                     }
 
-                    /* free the large_buffer */
+                    /* free the memory */
                     free(large_buffer);
+                    free(file_name);
                 } else {
                     /* No such file */
-                    fprintf(stderr, "Not Found\n");
                     strcpy(buffer, "NOT FOUND");
                     sprintf(buffer_send, "%d", strlen(buffer));
                     strcat(buffer_send, "\n");
@@ -205,9 +206,11 @@ int main(int argc, char *argv[]) {
                 }
 
             }
+
+            /* free the memory */
+            memset(buffer, 0, (sizeof buffer[0]) * MAX_LINE);
+            memset(buffer_send, 0, (sizeof buffer_send[0]) * strlen(buffer_send));
         }
-        fprintf(stderr, "Buffered %s\n", buffer);
-        /* Writeline(conn_s, buffer, strlen(buffer)); */
 
     	/*  Close the connected socket  */
     	if ( close(conn_s) < 0 ) {
