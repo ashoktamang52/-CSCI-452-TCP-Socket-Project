@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
                 fp = fopen(file_name, "rb");
                 if (fp) {
                     long lSize;
-                    char* large_buffer;
+                    void* large_buffer;
                     size_t result;
 
                     /* obtain file size */
@@ -181,17 +181,28 @@ int main(int argc, char *argv[]) {
                     fclose(fp);
 
                     fprintf(stderr, "The read large bufffer: %s\n", large_buffer);
+                    fprintf(stderr, "The size of large buffer: %d\n", lSize );
 
                     /* send the buffer to the client */
-                    write(conn_s, large_buffer, lSize);
+                    if (MAX_LINE < lSize) {
+                        strcpy(buffer_send, "The buffer size is smaller than what needs to be sent.");
+                        write(conn_s, buffer_send, strlen(buffer_send));
+                    }
+                    else {
+                        sprintf(buffer_send, "%d", lSize);
+                        strcat(buffer_send, "\n");
+                        strcat(buffer_send, large_buffer);
+                        write(conn_s, buffer_send, lSize);
+                    }
 
-
-
+                    /* free the large_buffer */
+                    free(large_buffer);
                 } else {
                     /* No such file */
                     fprintf(stderr, "Not Found\n");
                     strcpy(buffer, "NOT FOUND");
                     sprintf(buffer_send, "%d", strlen(buffer));
+                    strcat(buffer_send, "\n");
                     strcat(buffer_send, buffer);
 
                     /* Inform client that file is not in the server. */
@@ -200,12 +211,6 @@ int main(int argc, char *argv[]) {
 
             }
         }
-            
-        /* When client wants to capitalize the string */
-            
-        
-                
-        
         fprintf(stderr, "Buffered %s\n", buffer);
         /* Writeline(conn_s, buffer, strlen(buffer)); */
 
